@@ -100,7 +100,7 @@ public class EscenarioGService {
      *
      * Es crucial aplicar el predictor a las tres variables ANTES del corrector.
      */
-    private ResultadoMetodoSocial resolverHeun(EscenarioGRequest req) {
+    public ResultadoMetodoSocial resolverHeun(EscenarioGRequest req) {
         double h = req.getPasoTiempo();
         double t = 0.0;
         double N = req.getN0(); // Estado inicial de neutrales
@@ -184,7 +184,7 @@ public class EscenarioGService {
      * IMPORTANTE: todas las kᵢ de N, M, D se calculan con los mismos valores
      * de las tres variables en ese punto intermedio (sistema acoplado).
      */
-    private ResultadoMetodoSocial resolverRK4(EscenarioGRequest req) {
+    public ResultadoMetodoSocial resolverRK4(EscenarioGRequest req) {
         double h = req.getPasoTiempo();
         double t = 0.0;
         double N = req.getN0();

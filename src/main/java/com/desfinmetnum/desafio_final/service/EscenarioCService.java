@@ -65,7 +65,7 @@ public class EscenarioCService {
      * El polinomio resultante pasa exactamente por todos los puntos dados.
      * Desventaja: para muchos puntos puede oscilar mucho (fenómeno de Runge).
      */
-    private ResultadoInterpolacion calcularLagrange(double[] x, double[] y,
+    public ResultadoInterpolacion calcularLagrange(double[] x, double[] y,
                                                     double[] xEval, double[] xCurva) {
         // Evaluar en los días específicos que pidió el usuario
         List<PuntoXY> valoresInterpolados = new ArrayList<>();
@@ -123,7 +123,7 @@ public class EscenarioCService {
      *
      * Ventaja: agregar un punto nuevo solo requiere una nueva columna en la tabla.
      */
-    private ResultadoInterpolacion calcularNewton(double[] x, double[] y,
+    public ResultadoInterpolacion calcularNewton(double[] x, double[] y,
                                                   double[] xEval, double[] xCurva) {
         int n = x.length;
 
@@ -217,7 +217,7 @@ public class EscenarioCService {
      *
      * Se resuelve un sistema tridiagonal con el algoritmo de Thomas (O(n)).
      */
-    private ResultadoInterpolacion calcularSplines(double[] x, double[] y,
+    public ResultadoInterpolacion calcularSplines(double[] x, double[] y,
                                                    double[] xEval, double[] xCurva) {
         int n = x.length;  // Número de puntos conocidos
         int m = n - 1;     // Número de intervalos (tramos del spline)

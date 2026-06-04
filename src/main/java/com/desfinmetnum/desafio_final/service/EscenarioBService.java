@@ -71,7 +71,7 @@ public class EscenarioBService {
      * Error local: O(h²)  |  Error global: O(h)
      * → Menos preciso, puede acumular errores en problemas largos.
      */
-    private ResultadoMetodoODE resolverEuler(EscenarioBRequest req) {
+    public ResultadoMetodoODE resolverEuler(EscenarioBRequest req) {
         double h = req.getPasoTiempo();        // Tamaño del paso de tiempo
         double t = 0.0;                         // Tiempo inicial t₀ = 0
         double R = req.getReservaInicial();     // Condición inicial R(0)
@@ -116,7 +116,7 @@ public class EscenarioBService {
      * Error local: O(h³)  |  Error global: O(h²)
      * → Más preciso que Euler con el mismo costo computacional casi.
      */
-    private ResultadoMetodoODE resolverHeun(EscenarioBRequest req) {
+    public ResultadoMetodoODE resolverHeun(EscenarioBRequest req) {
         double h = req.getPasoTiempo();
         double t = 0.0;
         double R = req.getReservaInicial();
@@ -165,7 +165,7 @@ public class EscenarioBService {
      * Error local: O(h⁵)  |  Error global: O(h⁴)
      * → Método estándar de facto. Excelente precisión con pasos razonables.
      */
-    private ResultadoMetodoODE resolverRK4(EscenarioBRequest req) {
+    public ResultadoMetodoODE resolverRK4(EscenarioBRequest req) {
         double h = req.getPasoTiempo();
         double t = 0.0;
         double R = req.getReservaInicial();

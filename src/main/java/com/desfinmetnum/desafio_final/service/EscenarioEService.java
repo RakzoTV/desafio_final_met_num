@@ -132,7 +132,7 @@ public class EscenarioEService {
      * Convergencia: lineal (orden p ≈ 1). El error se reduce a la mitad cada vez.
      * Ventaja: siempre converge si se cumplen las condiciones iniciales.
      */
-    private ResultadoRaiz resolverBiseccion(String tipo, double[] coef, EscenarioERequest req) {
+    public ResultadoRaiz resolverBiseccion(String tipo, double[] coef, EscenarioERequest req) {
         double a = req.getIntervaloA();
         double b = req.getIntervaloB();
         double tol = req.getTolerancia();
@@ -215,7 +215,7 @@ public class EscenarioEService {
      * Convergencia: cuadrática (orden p ≈ 2) cerca de la raíz.
      * → Muy rápido pero puede diverger si f'(x) ≈ 0 o si x₀ está lejos.
      */
-    private ResultadoRaiz resolverNewtonRaphson(String tipo, double[] coef, EscenarioERequest req) {
+    public ResultadoRaiz resolverNewtonRaphson(String tipo, double[] coef, EscenarioERequest req) {
         double x = req.getX0(); // Punto inicial
         double tol = req.getTolerancia();
         int maxIter = req.getMaxIteraciones();
@@ -288,7 +288,7 @@ public class EscenarioEService {
      * Convergencia: superlineal (orden p ≈ 1.618, el número áureo φ).
      * → Más rápido que Bisección, más robusto que Newton cuando f' es difícil.
      */
-    private ResultadoRaiz resolverSecante(String tipo, double[] coef, EscenarioERequest req) {
+    public ResultadoRaiz resolverSecante(String tipo, double[] coef, EscenarioERequest req) {
         double x0 = req.getX0(); // Primer punto inicial
         double x1 = req.getX1(); // Segundo punto inicial
         double tol = req.getTolerancia();
@@ -401,7 +401,7 @@ public class EscenarioEService {
      * Construye una cadena legible con la expresión de la función f(x)
      * usando los coeficientes y el tipo de función seleccionados.
      */
-    private String construirExpresion(String tipo, double[] coef) {
+    public String construirExpresion(String tipo, double[] coef) {
         double a = coef[0], b = coef[1], c = coef[2], d = coef[3];
 
         return switch (tipo) {
@@ -421,7 +421,7 @@ public class EscenarioEService {
      * Genera puntos (x, f(x)) para el gráfico de la función.
      * El rango del gráfico se extiende un 20% más allá del intervalo [a, b].
      */
-    private List<PuntoGrafico> generarGrafica(String tipo, double[] coef, EscenarioERequest req) {
+    public List<PuntoGrafico> generarGrafica(String tipo, double[] coef, EscenarioERequest req) {
         int nPuntos = req.getPuntosGrafico() > 0 ? req.getPuntosGrafico() : 200;
         double xMin = req.getIntervaloA();
         double xMax = req.getIntervaloB();

@@ -2,6 +2,7 @@ package com.desfinmetnum.desafio_final.controller;
 
 import com.desfinmetnum.desafio_final.dto.EscenarioGRequest;
 import com.desfinmetnum.desafio_final.dto.EscenarioGResponse;
+import com.desfinmetnum.desafio_final.dto.EscenarioGResponse.ResultadoMetodoSocial;
 import com.desfinmetnum.desafio_final.service.EscenarioGService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,11 +10,15 @@ import org.springframework.web.bind.annotation.*;
 /**
  * Controlador REST para el Escenario G: Modelo de Difusión de Opinión Social.
  *
- * Expone el endpoint POST /api/escenario-g/simular que simula la dinámica
- * entre ciudadanos neutrales, manifestantes y mediadores usando Heun y RK4.
+ * Sistema de 3 EDOs acopladas:
+ *   N'(t) = -a·N·M + b·D   (ciudadanos neutrales)
+ *   M'(t) =  a·N·M - c·M·D (manifestantes activos)
+ *   D'(t) =  k·M   - r·D   (mediadores / diálogo)
  *
- * El frontend puede visualizar cómo evoluciona el conflicto social con distintos
- * valores de los parámetros (tasa de contagio, efectividad del diálogo, etc.)
+ * Endpoints por método:
+ *   POST /api/escenario-g/heun   → Método de Heun (orden 2)
+ *   POST /api/escenario-g/rk4    → Runge-Kutta orden 4
+ *   POST /api/escenario-g/todos  → Ambos métodos para comparar
  */
 @RestController
 @RequestMapping("/api/escenario-g")
@@ -26,13 +31,15 @@ public class EscenarioGController {
     }
 
     /**
-     * POST /api/escenario-g/simular
+     * POST /api/escenario-g/heun
      *
-     * Simula la dinámica social N(t), M(t), D(t) con Heun y RK4.
-     * Devuelve las series temporales de las tres poblaciones para comparar métodos
-     * y analizar la estabilidad del conflicto.
+     * Método de Heun aplicado al sistema de 3 EDOs acopladas.
+     *   Predictor: N* = N + h·fN,  M* = M + h·fM,  D* = D + h·fD
+     *   Corrector: Variable_{n+1} = Variable_n + (h/2)·(k1 + k2)
      *
-     * Ejemplo de JSON de entrada:
+     * Error global O(h²). Más rápido que RK4 con menor precisión.
+     *
+     * Ejemplo JSON:
      * {
      *   "n0": 800,
      *   "m0": 150,
@@ -45,19 +52,41 @@ public class EscenarioGController {
      *   "tiempoFinal": 60,
      *   "pasoTiempo": 0.5
      * }
+     */
+    @PostMapping("/heun")
+    public ResponseEntity<ResultadoMetodoSocial> heun(@RequestBody EscenarioGRequest req) {
+        return ResponseEntity.ok(service.resolverHeun(req));
+    }
+
+    /**
+     * POST /api/escenario-g/rk4
+     *
+     * Runge-Kutta de cuarto orden aplicado al sistema de 3 EDOs.
+     *   Calcula k1, k2, k3, k4 para N, M y D simultáneamente en cada paso.
+     *   Variable_{n+1} = Variable_n + (h/6)·(k1 + 2k2 + 2k3 + k4)
+     *
+     * Error global O(h⁴). El método más preciso para este sistema.
+     * Recomendado para análisis finales y presentación de resultados.
+     */
+    @PostMapping("/rk4")
+    public ResponseEntity<ResultadoMetodoSocial> rk4(@RequestBody EscenarioGRequest req) {
+        return ResponseEntity.ok(service.resolverRK4(req));
+    }
+
+    /**
+     * POST /api/escenario-g/todos
+     *
+     * Ejecuta Heun y RK4 con los mismos parámetros y devuelve
+     * ambos resultados para comparar las curvas N(t), M(t), D(t).
      *
      * Preguntas que responde la simulación:
      *   - ¿El conflicto tiende a estabilizarse o escala?
      *   - ¿Cuándo alcanza su pico el número de manifestantes?
      *   - ¿Qué pasa si se mejora la tasa de diálogo (paramC)?
-     *   - ¿Qué ocurre si no hay mediadores (d0 = 0, paramK = 0)?
-     *
-     * @param request JSON con las condiciones iniciales y parámetros del modelo
-     * @return 200 OK con series temporales de las tres poblaciones (Heun y RK4)
+     *   - ¿Qué ocurre si no hay mediadores (d0=0, paramK=0)?
      */
-    @PostMapping("/simular")
-    public ResponseEntity<EscenarioGResponse> simular(@RequestBody EscenarioGRequest request) {
-        EscenarioGResponse response = service.simular(request);
-        return ResponseEntity.ok(response);
+    @PostMapping("/todos")
+    public ResponseEntity<EscenarioGResponse> todos(@RequestBody EscenarioGRequest req) {
+        return ResponseEntity.ok(service.simular(req));
     }
 }
